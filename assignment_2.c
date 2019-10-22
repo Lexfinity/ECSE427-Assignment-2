@@ -12,7 +12,10 @@ static sem_t rw_mutex;
 
 static void *reader(void *arg)
 {
-  do
+
+int total = *((int *)  arg);
+int i = 0;
+  while(i < total)
   {
     //clock_t start_wait = clock(); 
     sem_wait(&mutex);
@@ -27,18 +30,22 @@ static void *reader(void *arg)
     if (read_count == 0)
       sem_post(&rw_mutex);
     sem_post(&mutex);
-  } while (1);
+    i++;
+  } //while (1);
 }
 
 static void *writer(void *arg)
 {
-  do
+int total = *((int *)  arg);
+int i = 0;
+  while(i < total)
   {
     //clock_t start_wait = clock(); 
     sem_wait(&rw_mutex);
     printf("writer\n");
     sem_post(&rw_mutex);
-  } while (1);
+    i++;
+  } //while (1);
 }
 
 int main(int argc, char *argv[])
@@ -56,7 +63,7 @@ int main(int argc, char *argv[])
 
   // Instantiating the threads for the writters and readers
   pthread_t *writer_threads = malloc(sizeof(pthread_t) *total_writers);
-  pthread_t *reader_threads= malloc(sizeof(pthread_t)* total_readers);
+  pthread_t *reader_threads= malloc(sizeof(pthread_t) *total_readers);
 
   printf("Start creation of Writers\n");
   // Creating the writers threads
